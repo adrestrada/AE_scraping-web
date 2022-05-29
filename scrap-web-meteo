@@ -1,0 +1,40 @@
+import requests
+from bs4 import BeautifulSoup
+
+def main():
+     
+    adresse="https://meteo.gc.ca/city/pages/qc-147_metric_f.html"
+    html = get_html_from_url(adresse )
+    report = get_meteo_from_htmlpage(html)
+
+    print('Condition météo: {} \n Location:{} \n Temperature:{}'.format(
+        report[0] ,report[1], report[2]
+    ))
+def get_html_from_url(adresse):
+    
+    response = requests.get(adresse).content
+    # Parse du contenu HTML
+
+    soup =  BeautifulSoup(response, "html.parser")
+    print("=" * 50)
+    print(soup.title.get_text())
+    print("=" * 50)
+    return soup
+def get_meteo_from_htmlpage(html):
+    prevision = html.find("tr",attrs={"class": "pdg-tp-0"})
+    location= html.find("h1",attrs={"id": "wb-cont"})
+    temperature = html.find("span",attrs={"class": "wxo-metric-hide"})
+    report = (prevision.get_text(),location.get_text(), temperature.get_text())
+    return report
+if __name__ == '__main__':
+    main()
+==================================================
+Montréal, QC - Prévisions sur 7 jours - d'Environnement Canada
+==================================================
+Condition météo: 
+Ce soir et cette nuit
+Pluie se changeant en neige ce soir et cessant vers minuit. Nuageux par la suite. Accumulation de neige de 2 à 4 cm. Vents devenant d'ouest à 30 km/h avec rafales à 50 ce soir. Minimum moins 4. Refroidissement éolien moins 11 au cours de la nuit.
+ 
+ Location:Montréal, QC
+ 
+ Temperature:0°C
